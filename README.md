@@ -12,6 +12,6 @@ deploy this repo to nvim
 ```
 gh repo clone b0bu/neovimrc
 cd neovimrc
-nvim --headless -c "luafile sync.lua" -c "lua Sync(A,B)" -c "qa"
+nvim --headless -c "luafile after/plugin/sync.lua" -c "lua Sync(A,B)" -c "qa"
 ```
 

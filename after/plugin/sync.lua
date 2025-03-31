@@ -14,11 +14,11 @@ function Sync(paths)
 	--- default params if none passed
 	setmetatable(paths, { __index = { source = vim.fn.getcwd(), destination = nvrc } })
 	local source, destination = paths[1] or paths.source, paths[2] or paths.destination
-	local after = "/after/plugin"
-	local lua = "/lua/custom/plugins"
+	local config = "/after/plugin"
+	local plugins = "/lua/custom/plugins"
 
-	Copy(source .. lua, destination .. lua)
-	Copy(source .. after, destination .. after)
+	Copy(source .. plugins, destination .. plugins)
+	Copy(source .. config, destination .. config)
 end
 
 vim.keymap.set("n", "<leader>cfg", function()

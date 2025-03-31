@@ -1,6 +1,5 @@
 --- after/plugin/sync.lua
 --- sync custom changes in and out of kickstart
---- cfg "config from git", ctg "config to git"
 local nvrc = vim.fn.stdpath("config")
 local git = "~/dev/neovimrc"
 
@@ -21,10 +20,12 @@ function Sync(paths)
 	Copy(source .. config, destination .. config)
 end
 
+--- "config from git"
 vim.keymap.set("n", "<leader>cfg", function()
 	Sync({ git, nvrc })
 end)
 
+--- "config to git"
 vim.keymap.set("n", "<leader>ctg", function()
 	Sync({ nvrc, git })
 end)

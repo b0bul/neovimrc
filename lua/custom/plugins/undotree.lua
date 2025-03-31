@@ -1,5 +1,5 @@
--- lua/plugins/rose-pine.lua
+-- lua/custom/plugins/undotree.lua
 return {
-  'mbbill/undotree',
-  name = 'undotree',
+	"mbbill/undotree",
+	name = "undotree",
 }

@@ -10,7 +10,7 @@ Once deployed
 - custom - plugins that extend capability
 - after - custom functions and bindings that alter functionality
 
-deploy to nvim
+deploy to nvim, i'm doing this from a `~/dev` dir and git dir is hardcoded in sync.lua.
 ```bash
 gh repo clone b0bu/neovimrc
 cd neovimrc

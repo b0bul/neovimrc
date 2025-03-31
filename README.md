@@ -3,6 +3,12 @@ this is written for me, so not expecting reuse. This is a mechanism I use to syn
 changes across multiple machines. By default Sync tries from cwd and can be called
 with empty args.
 
+```
+NVIM v0.11.0
+KICKSTART e947649
+```
+
+
 Once deployed 
 `<leader>cfg` syncs any new config from git, `<leader>ctg` syncs new edit to git
 

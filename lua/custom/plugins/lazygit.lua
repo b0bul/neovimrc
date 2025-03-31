@@ -1,4 +1,4 @@
--- nvim v0.8.0
+-- lua/custom/plugin/lazygit.lua
 return {
 	"kdheepak/lazygit.nvim",
 	lazy = true,

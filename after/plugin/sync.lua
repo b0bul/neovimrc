@@ -11,7 +11,7 @@ function Copy(s, d)
 end
 
 function Sync(paths)
-	--- default params if none passed
+	--- default params if none
 	setmetatable(paths, { __index = { source = vim.fn.getcwd(), destination = nvrc } })
 	local source, destination = paths[1] or paths.source, paths[2] or paths.destination
 	local config = "/after/plugin"

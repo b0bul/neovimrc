@@ -1,10 +1,12 @@
-### neovim kickstart customization
+## neovim kickstart customization
+this is written for me, so not expecting reuse
 
-custom - plugins extend capability
-after - loads custom functions and bindings that alter functionality
+### dirs
+- custom - plugins extend capability
+- after - loads custom functions and bindings that alter functionality
 
 install
 ```
-gh repo clone b0bu/neovimrc ~/.config/nvim
+gh repo clone b0bu/neovimrc
 ```
 

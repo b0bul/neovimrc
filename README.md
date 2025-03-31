@@ -13,7 +13,7 @@ Once deployed
 `<leader>cfg` syncs any new config from git, `<leader>ctg` syncs new edit to git
 
 ### dirs
-- custom - plugins that extend capability
+- lua - plugins that extend capability
 - after - custom functions and bindings that alter functionality
 
 deploy to nvim, i'm doing this from a `~/dev` dir and git dir is hardcoded in sync.lua.

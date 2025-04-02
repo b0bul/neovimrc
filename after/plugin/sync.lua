@@ -46,7 +46,6 @@ function Paths(directories, start, ending)
 
 	--- build paths to check
 	for complement = 1, num_paths do
-		print(table.concat(base, ", "))
 		base[start + complement] = subpaths[complement]
 		table.insert(paths, { unpack(base) })
 	end
@@ -63,19 +62,15 @@ function Paths(directories, start, ending)
 end
 
 function Stat(d)
-	local ok = vim.loop.fs_stat(d)
+	ok = vim.loop.fs_stat(d)
 	if not ok then
-		error("problem stating " .. d)
+		print("problem stating " .. d .. "\n")
 	end
 	return ok
 end
 
 function Mkdir(d)
-	local ok = vim.loop.fs_mkdir(d, 755)
-	if not ok then
-		error("problem creating " .. d)
-	end
-	return ok
+	return vim.loop.fs_mkdir(d, tonumber("755", 8))
 end
 
 function Copy(s, d)
@@ -90,9 +85,11 @@ function Check(d)
 	local start, length = IndexOf(subdirs)
 	local paths = Paths(subdirs, start, length)
 
-	Stat(d)
-	for k, v in pairs(paths) do
-		print(k, v)
+	for _, p in pairs(paths) do
+		local ok = Stat(p)
+		if not ok then
+			Mkdir(p)
+		end
 	end
 end
 
@@ -100,7 +97,6 @@ function Sync(paths)
 	--- default params if none
 	setmetatable(paths, { __index = { source = vim.fn.getcwd(), destination = nvrc } })
 	local source, destination = paths[1] or paths.source, paths[2] or paths.destination
-	-- local config = "/after/plugin"
 	local config = "/after/plugin"
 	local plugins = "/lua/custom/plugins"
 

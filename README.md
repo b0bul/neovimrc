@@ -16,6 +16,9 @@ Once deployed
 - lua - plugins that extend capability
 - after - custom functions and bindings that alter functionality
 
+### reqs 
+uncomment line `{ import = 'custom.plugin' },` in `~/.config/nvim/init.lua`
+
 deploy to nvim, i'm doing this from a `~/dev` dir and git dir is hardcoded in sync.lua.
 ```bash
 gh repo clone b0bu/neovimrc

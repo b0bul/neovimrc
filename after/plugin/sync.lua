@@ -3,7 +3,7 @@
 local nvrc = vim.fn.stdpath("config")
 local git = "~/dev/neovimrc"
 
-function Split(d)
+local split = function(d)
 	local sep = "/"
 	local t = {}
 	for s in string.gmatch(d, "([^" .. sep .. "]+)") do
@@ -12,7 +12,7 @@ function Split(d)
 	return t
 end
 
-function IndexOf(t)
+local indexOf = function(t)
 	local length = 0
 	local root = 0
 	for k, v in pairs(t) do
@@ -24,9 +24,9 @@ function IndexOf(t)
 	return root, length
 end
 
-function Paths(d)
-	local directories = Split(d)
-	local start, length = IndexOf(directories)
+local buildPaths = function(d)
+	local directories = split(d)
+	local start, length = indexOf(directories)
 
 	local num_paths = length - start
 	local subpaths = {}
@@ -64,7 +64,7 @@ function Paths(d)
 	return complete_paths
 end
 
-function Stat(d)
+local stat = function(d)
 	ok = vim.loop.fs_stat(d)
 	if not ok then
 		print("problem stating, will create" .. d .. "\n")
@@ -72,26 +72,26 @@ function Stat(d)
 	return ok
 end
 
-function Mkdir(d)
+local mkdir = function(d)
 	return vim.loop.fs_mkdir(d, tonumber("755", 8))
 end
 
-function Copy(s, d)
-	Check(d)
+local check = function(d)
+	local paths = buildPaths(d)
+
+	for _, p in pairs(paths) do
+		local ok = stat(p)
+		if not ok then
+			mkdir(p)
+		end
+	end
+end
+
+local copy = function(s, d)
+	check(d)
 	--- path join
 	local cmd = s .. "/* " .. d
 	os.execute("cp -R " .. cmd)
-end
-
-function Check(d)
-	local paths = Paths(d)
-
-	for _, p in pairs(paths) do
-		local ok = Stat(p)
-		if not ok then
-			Mkdir(p)
-		end
-	end
 end
 
 function Sync(paths)
@@ -101,8 +101,8 @@ function Sync(paths)
 	local config = "/after/plugin"
 	local plugins = "/lua/custom/plugins"
 
-	Copy(source .. plugins, destination .. plugins)
-	Copy(source .. config, destination .. config)
+	copy(source .. plugins, destination .. plugins)
+	copy(source .. config, destination .. config)
 end
 
 --- "config from git"

@@ -10,15 +10,26 @@ function installLazyGit() {
 	rm -rf lazygit.tar.gz
 }
 
+function pythonSupportForVimspector() {
+	pyenv virtualenv nvim
+	pyenv activate nvim
+	pip install pynvim
+	pyenv deactivate
+}
+
 # fd dep for telescope
+# xclip for yank to system clipboard
+# pynvim used for vimspector support (requires venv as per checkhealth 'advice')
 case $(uname -s) in
 	"Linux")
 	sudo apt update -y
-	sudo apt install lua3.5 fd-find -y
+	sudo apt install xclip lua3.5 fd-find -y
+	pythonSupportForVimspector
 	installLazyGit
 	;;
 	"Darwin")	
-        brew install lazygit fd
+	pythonSupportForVimspector
+        brew install lazygit fd pynvim
 	;;
 	*)
 	echo "windows?!"

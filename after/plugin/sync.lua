@@ -24,8 +24,10 @@ function IndexOf(t)
 	return root, length
 end
 
-function Paths(directories, start, ending)
-	local num_paths = ending - start
+function Paths(directories)
+	local start, length = IndexOf(directories)
+
+	local num_paths = length - start
 	local subpaths = {}
 	local paths = {}
 	local base = {}
@@ -39,12 +41,12 @@ function Paths(directories, start, ending)
 		end
 	end
 
-	--- get everything after nvim
-	for subpath = start + 1, ending do
+	--- get everything after stdpath ~/.config/nvim/
+	for subpath = start + 1, length do
 		table.insert(subpaths, directories[subpath])
 	end
 
-	--- build paths to check
+	--- build paths x,y to check ~/.config/nvim/x and y and x/y nested
 	for complement = 1, num_paths do
 		base[start + complement] = subpaths[complement]
 		table.insert(paths, { unpack(base) })
@@ -64,7 +66,7 @@ end
 function Stat(d)
 	ok = vim.loop.fs_stat(d)
 	if not ok then
-		print("problem stating " .. d .. "\n")
+		print("problem stating, will create" .. d .. "\n")
 	end
 	return ok
 end
@@ -82,8 +84,7 @@ end
 
 function Check(d)
 	local subdirs = Split(d)
-	local start, length = IndexOf(subdirs)
-	local paths = Paths(subdirs, start, length)
+	local paths = Paths(subdirs)
 
 	for _, p in pairs(paths) do
 		local ok = Stat(p)
@@ -94,7 +95,7 @@ function Check(d)
 end
 
 function Sync(paths)
-	--- default params if none
+	--- default params if empty
 	setmetatable(paths, { __index = { source = vim.fn.getcwd(), destination = nvrc } })
 	local source, destination = paths[1] or paths.source, paths[2] or paths.destination
 	local config = "/after/plugin"

@@ -29,7 +29,7 @@ case $(uname -s) in
 	;;
 	"Darwin")	
 	pythonSupportForVimspector
-        brew install lazygit fd pynvim
+        brew install lazygit fd
 	;;
 	*)
 	echo "windows?!"

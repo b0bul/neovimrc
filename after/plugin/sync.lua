@@ -44,14 +44,22 @@ function Paths(directories, start, ending)
 		table.insert(subpaths, directories[subpath])
 	end
 
-	--- create multiple nested path
+	--- build paths to check
 	for complement = 1, num_paths do
 		print(table.concat(base, ", "))
 		base[start + complement] = subpaths[complement]
 		table.insert(paths, { unpack(base) })
 	end
 
-	return paths
+	for path, _ in pairs(paths) do
+		table.insert(complete_paths, table.concat(paths[path], "/"))
+	end
+
+	for path, _ in pairs(complete_paths) do
+		complete_paths[path] = "/" .. complete_paths[path]
+	end
+
+	return complete_paths
 end
 
 function Stat(d)
@@ -78,23 +86,14 @@ function Copy(s, d)
 end
 
 function Check(d)
-	local dirs = Split(d)
-	local start, length = IndexOf(dirs)
-	local p = Paths(dirs, start, length)
-	print(table.concat(p[1], "/") .. "\n")
-	print("and then\n")
-	print(table.concat(p[2], "/") .. "\n")
-	print("and then\n")
-	print(table.concat(p[3], "/") .. "\n")
-	--[[
-	local exists, _ = Stat(d)
-	if not exists then
-		local ok, err = Mkdir(d)
-		if not ok then
-			error("error creating " .. d .. err)
-		end
+	local subdirs = Split(d)
+	local start, length = IndexOf(subdirs)
+	local paths = Paths(subdirs, start, length)
+
+	Stat(d)
+	for k, v in pairs(paths) do
+		print(k, v)
 	end
-	--]]
 end
 
 function Sync(paths)
@@ -102,10 +101,10 @@ function Sync(paths)
 	setmetatable(paths, { __index = { source = vim.fn.getcwd(), destination = nvrc } })
 	local source, destination = paths[1] or paths.source, paths[2] or paths.destination
 	-- local config = "/after/plugin"
-	local config = "/after/plugin/somethingelse"
+	local config = "/after/plugin"
 	local plugins = "/lua/custom/plugins"
 
-	-- Copy(source .. plugins, destination .. plugins)
+	Copy(source .. plugins, destination .. plugins)
 	Copy(source .. config, destination .. config)
 end
 

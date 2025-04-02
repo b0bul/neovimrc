@@ -24,7 +24,8 @@ function IndexOf(t)
 	return root, length
 end
 
-function Paths(directories)
+function Paths(d)
+	local directories = Split(d)
 	local start, length = IndexOf(directories)
 
 	local num_paths = length - start
@@ -83,8 +84,7 @@ function Copy(s, d)
 end
 
 function Check(d)
-	local subdirs = Split(d)
-	local paths = Paths(subdirs)
+	local paths = Paths(d)
 
 	for _, p in pairs(paths) do
 		local ok = Stat(p)

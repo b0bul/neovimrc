@@ -20,16 +20,17 @@ function pythonSupportForVimspector() {
 # fd dep for telescope
 # xclip for yank to system clipboard
 # pynvim used for vimspector support (requires venv as per checkhealth 'advice')
+# npm used for jsonls language server
 case $(uname -s) in
 	"Linux")
 	sudo apt update -y
-	sudo apt install xclip lua3.5 fd-find -y
+	sudo apt install npm xclip lua3.5 fd-find -y
 	pythonSupportForVimspector
 	installLazyGit
 	;;
 	"Darwin")	
 	pythonSupportForVimspector
-        brew install lazygit fd
+        brew install lazygit fd npm
 	;;
 	*)
 	echo "windows?!"

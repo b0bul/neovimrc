@@ -87,6 +87,17 @@ local check = function(d)
 	end
 end
 
+function Pull(d)
+	local current = vim.fn.getcwd()
+	vim.api.nvim_set_current_dir(d)
+	vim.fn.system({
+		"git",
+		"pull",
+	})
+
+	vim.api.nvim_set_current_dir(current)
+end
+
 local copy = function(s, d)
 	check(d)
 	--- path join
@@ -107,10 +118,12 @@ end
 
 --- "config from git"
 vim.keymap.set("n", "<leader>cfg", function()
+	Pull(git)
 	Sync({ git, nvrc })
 end)
 
 --- "config to git"
 vim.keymap.set("n", "<leader>ctg", function()
+	Pull(git)
 	Sync({ nvrc, git })
 end)

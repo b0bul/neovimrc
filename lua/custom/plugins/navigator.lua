@@ -5,6 +5,8 @@ return {
 		"neovim/nvim-lspconfig",
 	},
 	config = function()
-		require("navigator").setup()
+		require("navigator").setup({
+			mason = true,
+		})
 	end,
 }

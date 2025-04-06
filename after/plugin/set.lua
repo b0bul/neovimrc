@@ -56,8 +56,6 @@ vim.keymap.set("v", "<leader>x", ":lua<CR>")
 -- 	print(current_pos, relative_direction, relative_line_no_1, relative_line_no_2, jump, relative_pos)
 -- end)
 
-vim.g.have_nerd_font = true
-
 local job_id = 0
 vim.api.nvim_create_autocmd("TermOpen", {
 	group = vim.api.nvim_create_augroup("term-open", { clear = true }),

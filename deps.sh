@@ -31,6 +31,7 @@ case $(uname -s) in
 	"Darwin")	
 	pythonSupportForVimspector
         brew install lazygit fd npm
+	brew install --cask font-fira-code-nerd-font
 	;;
 	*)
 	echo "windows?!"

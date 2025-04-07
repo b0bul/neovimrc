@@ -26,4 +26,6 @@ cd neovimrc
 #initial sync, move to keymaps after this
 nvim --headless -c "luafile after/plugin/sync.lua" -c "lua Sync({})" -c "qa"
 ```
-
+### note
+- macos I had to set `vim.g.have_nerd_font = true` in kickstart init.lua but not on windows
+- this plugin `'nvim-tree/nvim-web-devicons'` is pre-installed by kickstart

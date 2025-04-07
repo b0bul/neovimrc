@@ -29,3 +29,21 @@ nvim --headless -c "luafile after/plugin/sync.lua" -c "lua Sync({})" -c "qa"
 ### note
 - set `vim.g.have_nerd_font = true` in kickstart init.lua
 - `'nvim-tree/nvim-web-devicons'` is pre-installed by kickstart
+
+### installed lsps
+- bash-debug-adapter
+- clangd
+- cpptools
+- go-debug-adapter
+- goimports
+- gopls
+- json-lsp
+- jsonls
+- jsonlint
+- jsonnetfmt
+- lua-language-server
+- lua-ls
+- stylua
+- terraform-ls
+- terraformls
+- tflint

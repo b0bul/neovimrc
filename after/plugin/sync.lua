@@ -106,8 +106,14 @@ local copy = function(s, d)
 	os.execute("cp -R " .. cmd)
 end
 
+local configs = {
+	after = "/after/plugin",
+	plugins = "/lua/custom/plugins",
+	before = "/plugin",
+}
+
 function Sync(paths, opts)
-	opts = opts or {}
+	opts = opts or configs
 	--- default params if empty
 	setmetatable(paths, { __index = { source = vim.fn.getcwd(), destination = nvrc } })
 	local source, destination = paths[1] or paths.source, paths[2] or paths.destination
@@ -116,12 +122,6 @@ function Sync(paths, opts)
 		copy(source .. config, destination .. config)
 	end
 end
-
-local configs = {
-	after = "/after/plugin",
-	plugins = "lua/custom/plugins",
-	before = "plugin",
-}
 
 --- "config from git"
 vim.keymap.set("n", "<leader>cfg", function()

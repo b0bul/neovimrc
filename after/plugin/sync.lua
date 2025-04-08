@@ -26,9 +26,10 @@ end
 
 local buildPaths = function(d)
 	local directories = split(d)
-	local start, length = indexOf(directories)
+	-- end is reserved keywork
+	local start, last = indexOf(directories)
 
-	local num_paths = length - start
+	local num_paths = last - start
 	local subpaths = {}
 	local paths = {}
 	local base = {}
@@ -43,7 +44,7 @@ local buildPaths = function(d)
 	end
 
 	--- get everything after stdpath ~/.config/nvim/
-	for subpath = start + 1, length do
+	for subpath = start + 1, last do
 		table.insert(subpaths, directories[subpath])
 	end
 

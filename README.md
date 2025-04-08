@@ -15,20 +15,17 @@ Once deployed
 - lua - plugins that extend capability
 - after - custom functions and bindings that alter functionality
 
-### reqs 
-uncomment `{ import = 'custom.plugin' },` in `~/.config/nvim/init.lua`
-
-deploy to nvim, I'm doing this from my `~/dev` dir. It's hardcoded in `sync.lua`.
+### deploy 
 ```bash
-gh repo clone b0bu/neovimrc
-cd neovimrc
+gh repo clone b0bu/neovimrc && cd neovimrc
 ./deps.sh
-#initial sync, move to keymaps after this
+#initial sync -  move to keymaps after this
 nvim --headless -c "luafile after/plugin/sync.lua" -c "lua Sync({})" -c "qa"
 ```
-### note
+### reqs 
 - set `vim.g.have_nerd_font = true` in kickstart init.lua
 - `'nvim-tree/nvim-web-devicons'` is pre-installed by kickstart
+- uncomment `{ import = 'custom.plugin' },` in `~/.config/nvim/init.lua`
 
 ### installed lsps
 - bash-debug-adapter

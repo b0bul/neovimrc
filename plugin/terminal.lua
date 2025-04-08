@@ -35,10 +35,16 @@ local function new_floating_window(opts)
 	return { buf = buf, win = win }
 end
 
-vim.api.nvim_create_user_command("Terminal", function()
+local toggle_term = function()
 	if not vim.api.nvim_win_is_valid(state.floating.win) then
 		state.floating = new_floating_window({ buf = state.floating.buf })
+		if vim.bo[state.floating.buf].buftype ~= "terminal" then
+			vim.cmd.terminal()
+		end
 	else
 		vim.api.nvim_win_hide(state.floating.win)
 	end
-end, {})
+end
+
+vim.api.nvim_create_user_command("Terminal", toggle_term({}))
+vim.keymap.set({ "n", "t" }, "<leader>tt", toggle_term)

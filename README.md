@@ -14,6 +14,7 @@ Once deployed
 ### dirs
 - lua - plugins that extend capability
 - after - custom functions and bindings that alter functionality
+- plugin - lua loaded before neovim loads plugins 
 
 ### deploy 
 ```bash

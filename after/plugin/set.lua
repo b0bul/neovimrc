@@ -34,6 +34,7 @@ vim.opt.clipboard = "unnamedplus"
 vim.keymap.set("n", "<leader>x", ":.lua<CR>")
 vim.keymap.set("v", "<leader>x", ":lua<CR>")
 
+vim.g.python3_host_prog = "~/.pyenv/versions/nvim/bin/python3"
 -- vim.keymap.set("n", "<leader>dr", function()
 -- 	local cursor = vim.api.nvim_win_get_cursor(0)
 -- 	local current_pos = cursor[1]

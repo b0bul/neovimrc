@@ -68,7 +68,7 @@ end
 local stat = function(d)
 	ok = vim.loop.fs_stat(d)
 	if not ok then
-		print("problem stating, will create" .. d .. "\n")
+		print("problem stating, will create " .. d .. "\n")
 	end
 	return ok
 end

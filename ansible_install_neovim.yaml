@@ -2,6 +2,8 @@
 - name: Update Ubuntu and install Neovim
   hosts: localhost
   become: yes
+  vars:
+    desired_version: v0.11.2
   tasks:
     - name: Check nvim version
       command: nvim -v
@@ -19,7 +21,7 @@
     - name: Continue?
       assert:
         that:
-          - "'{{ nvim_version }}' is version('v0.10.0', 'gt')"
+          - "'{{ nvim_version }}' is version('{{ desired_version }}', '>=')"
 
     - name: Update apt cache and upgrade packages
       apt:

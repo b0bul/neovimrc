@@ -4,6 +4,12 @@ changes across multiple machines and in and out of kickstart. By default `Sync` 
 with empty args.
 
 ```
+sudo apt install ansible -y
+ansible-playbook -c local -i 'localhost,' main.yaml -u $(whoami)
+```
+
+
+```
 NVIM v0.11.0
 KICKSTART e947649
 ```

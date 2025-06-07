@@ -10,7 +10,7 @@ ansible-playbook -c local -i 'localhost,' main.yaml -u $(whoami)
 
 
 ```
-NVIM v0.11.0
+NVIM v0.11.2
 KICKSTART e947649
 ```
 

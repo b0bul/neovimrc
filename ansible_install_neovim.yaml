@@ -1,0 +1,109 @@
+---
+- name: Update Ubuntu and install Neovim
+  hosts: localhost
+  become: yes
+  tasks:
+    - name: Check nvim version
+      command: nvim -v
+      become: false
+      register: nvim
+
+    - name: Extract semver
+      ansible.builtin.set_fact:
+        nvim_version: "{{ nvim.stdout_lines[0] | regex_search('v[0-9]+\\.[0-9]+\\.[0-9]+') }}"
+
+    - name: Installed version
+      debug:
+        msg: "{{ nvim_version }}"
+
+    - name: Continue?
+      assert:
+        that:
+          - "'{{ nvim_version }}' is version('v0.10.0', 'gt')"
+
+    - name: Update apt cache and upgrade packages
+      apt:
+        update_cache: yes
+        upgrade: dist
+        cache_valid_time: 3600
+
+    - name: Install dependencies for Neovim
+      apt:
+        name:
+          - git
+          - build-essential
+          - ninja-build
+          - gettext
+          - curl
+          - tar
+        state: present
+
+    - name: Download Neovim latest release
+      get_url:
+        url: https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
+        dest: /tmp/nvim-linux-x86_64.tar.gz
+        mode: '0644'
+
+    - name: Create /opt/nvim directory
+      file:
+        path: /opt/nvim
+        state: directory
+        mode: '0755'
+
+    - name: Create /tmp/nvim-extracted directory
+      file:
+        path: /tmp/nvim-extracted
+        state: directory
+        mode: '0755'
+
+    - name: Extract Neovim to /tmp for inspection
+      unarchive:
+        src: /tmp/nvim-linux-x86_64.tar.gz
+        dest: /tmp/nvim-extracted
+        #remote_src: yes
+        creates: /tmp/nvim-extracted/nvim-linux-x86_64
+
+    - name: /tmp/nvim-extracted/nvim-linux-x86_64 is empty?
+      shell: ls -lA
+      args:
+        chdir: /tmp/nvim-extracted/nvim-linux-x86_64
+      register: contents
+
+    - name: Move Neovim files to /opt/nvim
+      shell: mv /tmp/nvim-extracted/nvim-linux-x86_64/* /opt/nvim/
+      when: contents["stdout_lines"] | length > 1 # total: 0 counts as 1
+
+    - name: Ensure Neovim binary is executable
+      file:
+        path: /opt/nvim/bin/nvim
+        mode: '0755'
+
+    - name: Add Neovim to system-wide PATH
+      lineinfile:
+        path: /etc/profile.d/neovim.sh
+        line: 'export PATH=$PATH:/opt/nvim/bin'
+        create: yes
+        mode: '0644'
+
+    - name: Clone Neovim Kickstart config
+      git:
+        repo: https://github.com/nvim-lua/kickstart.nvim.git
+        dest: /home/{{ ansible_user }}/.config/nvim
+        depth: 1
+      become: no
+
+    - name: Set ownership of Neovim config
+      file:
+        path: /home/{{ ansible_user }}/.config/nvim
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        recurse: yes
+      become: yes
+
+    - name: Clean up downloaded tarball and extracted files
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        - /tmp/nvim-linux-x86_64.tar.gz
+        - /tmp/nvim-extracted

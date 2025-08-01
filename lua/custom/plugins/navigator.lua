@@ -1,12 +1,16 @@
 return {
-	"ray-x/navigator.lua",
-	dependencies = {
-		{ "ray-x/guihua.lua", run = "cd lua/fzy && make" },
-		"neovim/nvim-lspconfig",
-	},
-	config = function()
-		require("navigator").setup({
-			mason = true,
-		})
-	end,
+    "ray-x/navigator.lua",
+    dependencies = {
+        { "ray-x/guihua.lua", run = "cd lua/fzy && make" },
+        "neovim/nvim-lspconfig",
+    },
+    config = function()
+        require("navigator").setup({
+            lsp = {
+                diagnostic = {
+                    register = true,
+                },
+            },
+        })
+    end,
 }

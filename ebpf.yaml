@@ -1,0 +1,68 @@
+---
+- name: Setup eBPF development environment (Linux-agnostic, no Go)
+  hosts: all
+  become: true
+
+  vars:
+    common_packages:
+      - llvm
+      - clang
+      - gcc
+      - make
+      - git
+      - pkg-config
+
+    debian_packages:
+      - build-essential
+      - linux-headers-{{ ansible_kernel }}
+      - gcc-multilib
+      - linux-tools-{{ ansible_kernel }}
+      - linux-tools-common
+      - linux-tools-generic
+      - libbpf-dev
+      - libbpfcc-dev
+
+    redhat_packages:
+      - kernel-devel
+      - kernel-headers
+      - gcc
+      - gcc-c++
+      - make
+      - elfutils-libelf-devel
+      - clang
+      - llvm
+      - libbpf
+      - libbpf-devel
+      - bpftool
+
+  tasks:
+    - name: Update package cache
+      package:
+        update_cache: yes
+
+    - name: Install common packages
+      package:
+        name: "{{ common_packages }}"
+        state: present
+
+    - name: Install Debian/Ubuntu-specific packages
+      apt:
+        name: "{{ debian_packages }}"
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: Install RedHat/CentOS/Fedora-specific packages
+      yum:
+        name: "{{ redhat_packages }}"
+        state: present
+      when: ansible_os_family == "RedHat"
+
+    - name: Verify bpftool is available
+      command: bpftool version
+      register: bpftool_check
+      ignore_errors: yes
+
+    - name: Display bpftool version if installed
+      debug:
+        msg: "bpftool version: {{ bpftool_check.stdout | default('Not found') }}"
+

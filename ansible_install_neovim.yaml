@@ -3,25 +3,28 @@
   hosts: localhost
   become: yes
   vars:
-    desired_version: v0.11.2
+    desired_version: v0.11.3
   tasks:
     - name: Check nvim version
       command: nvim -v
       become: false
+      ignore_errors: true
       register: nvim
 
     - name: Extract semver
+      ignore_errors: true
       ansible.builtin.set_fact:
         nvim_version: "{{ nvim.stdout_lines[0] | regex_search('v[0-9]+\\.[0-9]+\\.[0-9]+') }}"
 
     - name: Installed version
+      ignore_errors: true
       debug:
         msg: "{{ nvim_version }}"
 
     - name: Continue?
       assert:
         that:
-          - "'{{ nvim_version }}' is version('{{ desired_version }}', '>=')"
+          - "nvim_version is version('desired_version', '<')"
 
     - name: Update apt cache and upgrade packages
       apt:

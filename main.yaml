@@ -1,2 +1,3 @@
 ---
+- import_playbook: go.yaml
 - import_playbook: ansible_install_neovim.yaml

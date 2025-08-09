@@ -39,8 +39,10 @@
           - build-essential
           - ninja-build
           - gettext
+          - unzip
           - curl
           - tar
+          - npm
         state: present
 
     - name: Download Neovim latest release

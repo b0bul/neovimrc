@@ -4,27 +4,40 @@
   become: yes
   vars:
     desired_version: v0.11.3
+    isa_conversion_table:
+      aarch64: arm64
+      x86_64: x86_64
+    ISA: "{{ isa_conversion_table[ansible_facts.architecture] }}"
   tasks:
+    - name: Print all available facts
+      ansible.builtin.debug:
+        var: ISA
+
     - name: Check nvim version
       command: nvim -v
-      become: false
+      become: no
       ignore_errors: true
       register: nvim
 
+    - name: Show facts available on the system
+      ansible.builtin.debug:
+        var: nvim
+
     - name: Extract semver
-      ignore_errors: true
       ansible.builtin.set_fact:
         nvim_version: "{{ nvim.stdout_lines[0] | regex_search('v[0-9]+\\.[0-9]+\\.[0-9]+') }}"
+      when: nvim.failed == false
 
     - name: Installed version
-      ignore_errors: true
       debug:
         msg: "{{ nvim_version }}"
+      when: nvim.failed == false
 
     - name: Continue?
       assert:
         that:
           - "nvim_version is version('desired_version', '<')"
+      when: nvim.failed == false
 
     - name: Update apt cache and upgrade packages
       apt:
@@ -47,8 +60,8 @@
 
     - name: Download Neovim latest release
       get_url:
-        url: https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
-        dest: /tmp/nvim-linux-x86_64.tar.gz
+        url: "https://github.com/neovim/neovim/releases/latest/download/nvim-linux-{{ ISA }}.tar.gz"
+        dest: "/tmp/nvim-linux-{{ ISA }}.tar.gz"
         mode: '0644'
 
     - name: Create /opt/nvim directory
@@ -65,19 +78,24 @@
 
     - name: Extract Neovim to /tmp for inspection
       unarchive:
-        src: /tmp/nvim-linux-x86_64.tar.gz
+        src: "/tmp/nvim-linux-{{ ISA }}.tar.gz"
         dest: /tmp/nvim-extracted
         #remote_src: yes
         creates: /tmp/nvim-extracted/nvim-linux-x86_64
 
-    - name: /tmp/nvim-extracted/nvim-linux-x86_64 is empty?
+    - name: "/tmp/nvim-extracted/nvim-linux-{{ ISA }} is empty?"
       shell: ls -lA
       args:
-        chdir: /tmp/nvim-extracted/nvim-linux-x86_64
+        chdir: "/tmp/nvim-extracted/nvim-linux-{{ ISA }}"
       register: contents
 
+    - name: Remove previous version 
+      ansible.builtin.file:
+        state: absent
+        path: /opt/nvim
+
     - name: Move Neovim files to /opt/nvim
-      shell: mv /tmp/nvim-extracted/nvim-linux-x86_64/* /opt/nvim/
+      shell: mv "/tmp/nvim-extracted/nvim-linux-{{ ISA }}/" /opt/nvim/
       when: contents["stdout_lines"] | length > 1 # total: 0 counts as 1
 
     - name: Ensure Neovim binary is executable
@@ -97,7 +115,7 @@
         repo: https://github.com/nvim-lua/kickstart.nvim.git
         dest: /home/{{ ansible_user }}/.config/nvim
         depth: 1
-      become: no
+      become: yes 
 
     - name: Set ownership of Neovim config
       file:
@@ -112,5 +130,5 @@
         path: "{{ item }}"
         state: absent
       loop:
-        - /tmp/nvim-linux-x86_64.tar.gz
+        - "/tmp/nvim-linux-{{ ISA }}.tar.gz"
         - /tmp/nvim-extracted

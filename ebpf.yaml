@@ -15,7 +15,7 @@
     debian_packages:
       - build-essential
       - linux-headers-{{ ansible_kernel }}
-      - gcc-multilib
+        #- gcc-multilib
       - linux-tools-{{ ansible_kernel }}
       - linux-tools-common
       - linux-tools-generic

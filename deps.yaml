@@ -15,6 +15,7 @@
     - name: Install packages on Linux
       ansible.builtin.apt:
         name:
+          - fontconfig
           - npm
           - xclip
           - lua5.3
@@ -58,6 +59,7 @@
         fi
       args:
         executable: /bin/bash
+      register: pyenv_installed
 
     - name: Create and activate Python virtualenv for Vimspector
       ansible.builtin.shell: |
@@ -73,13 +75,16 @@
         pyenv deactivate
       args:
         executable: /bin/bash
-
+      when: pyenv_installed.failed == true
+      
     - name: Install LazyGit on Linux
       ansible.builtin.shell: |
-        LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": *"v\K[^"]*')
-        curl -Lo /tmp/lazygit.tar.gz "{{ lazygit_repo }}/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_{{ ISA }}.tar.gz"
-        tar xf /tmp/lazygit.tar.gz -C /usr/local/bin/
-        rm -rf /tmp/lazygit.tar.gz
+        if ! command -v lazygit &> /dev/null; then
+          LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": *"v\K[^"]*')
+          curl -Lo /tmp/lazygit.tar.gz "{{ lazygit_repo }}/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_{{ ISA }}.tar.gz"
+          tar xf /tmp/lazygit.tar.gz -C /usr/local/bin/
+          rm -rf /tmp/lazygit.tar.gz
+        fi
       when: is_linux
       become: yes
       args:
@@ -107,4 +112,21 @@
         - ~/.zshrc
         - ~/.bashrc
 
+    - name: create font cache
+      ansible.builtin.file:
+        path: "{{ ansible_env.HOME }}/.fonts"
+        owner: "{{ ansible_user }}"
+        group: "{{ ansible_user }}"
+        state: directory 
+      tags: ["font"]
+
+    - name: Install FiraCode nerd font
+      ansible.builtin.shell: |
+        curl -Lo /tmp/firacode.zip "https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/FiraCode.zip"
+        unzip /tmp/firacode.zip -d ~/.fonts/
+        fc-cache -fv
+      when: is_linux
+      args:
+        executable: /bin/bash
+      tags: ["font"]
 

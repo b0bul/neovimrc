@@ -1,10 +1,10 @@
 ---
+- import_playbook: deps.yaml
+  tags: ["deps"]
 - import_playbook: go.yaml
   tags: ["go"]
 - import_playbook: ebpf.yaml
   tags: ["ebpf"]
 - import_playbook: neovim.yaml
   tags: ["nvim"]
-- import_playbook: deps.yaml
-  tags: ["deps"]
   #- import_playbook: plugins.yaml

@@ -4,10 +4,6 @@
   vars:
     desired_version: v0.11.3
   tasks:
-    - name: Print all available facts
-      ansible.builtin.debug:
-        var: ansible_env 
-
     - name: Check nvim version
       command: nvim -v
       become: no
@@ -79,7 +75,6 @@
       unarchive:
         src: "/tmp/nvim-linux-{{ ISA }}.tar.gz"
         dest: /tmp/nvim-extracted
-        #remote_src: yes
         creates: /tmp/nvim-extracted/nvim-linux-x86_64
 
     - name: "/tmp/nvim-extracted/nvim-linux-{{ ISA }} is empty?"
@@ -90,9 +85,12 @@
 
     - name: Remove previous version 
       ansible.builtin.file:
+        path: "{{ item }}" 
         state: absent
-        path: /opt/nvim
       become: yes
+      loop:
+        - /opt/nvim
+        - "{{ ansible_env.HOME }}/.config/nvim"
 
     - name: Move Neovim files to /opt/nvim
       shell: mv "/tmp/nvim-extracted/nvim-linux-{{ ISA }}/" /opt/nvim/
@@ -116,15 +114,13 @@
         repo: https://github.com/nvim-lua/kickstart.nvim.git
         dest: "{{ ansible_env.HOME }}/.config/nvim"
         depth: 1
-      become: yes 
 
     - name: Set ownership of Neovim config
       file:
-        path: /home/{{ ansible_user }}/.config/nvim
+        path: "{{ ansible_env.HOME }}/.config/nvim"
         owner: "{{ ansible_user }}"
         group: "{{ ansible_user }}"
         recurse: yes
-      become: yes
 
     - name: Clean up downloaded tarball and extracted files
       file:
@@ -133,3 +129,10 @@
       loop:
         - "/tmp/nvim-linux-{{ ISA }}.tar.gz"
         - /tmp/nvim-extracted
+
+    - name: Enable custom plugins in kickstart
+      lineinfile:
+        dest: "{{ ansible_env.HOME }}/.config/nvim/init.lua"
+        regexp: "^  -- { import = 'custom.plugins' },$"
+        line: " { import = 'custom.plugins' },"
+

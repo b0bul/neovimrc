@@ -3,10 +3,6 @@
   hosts: localhost
   vars:
     desired_version: v0.11.3
-    isa_conversion_table:
-      aarch64: arm64
-      x86_64: x86_64
-    ISA: "{{ isa_conversion_table[ansible_facts.architecture] }}"
   tasks:
     - name: Print all available facts
       ansible.builtin.debug:

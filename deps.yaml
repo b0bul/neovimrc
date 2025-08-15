@@ -5,7 +5,12 @@
     lazygit_repo: "https://github.com/jesseduffield/lazygit"
     font_package: "font-fira-code-nerd-font"
     python_env_name: "nvim"
+    python_version: "3.9.0"
   tasks:
+    - name: stuff
+      ansible.builtin.debug:
+        var: ISA
+
     - name: Detect operating system
       ansible.builtin.set_fact:
         is_linux: "{{ ansible_system == 'Linux' }}"
@@ -62,10 +67,12 @@
       ansible.builtin.shell: |
         export PATH="$HOME/.pyenv/bin:$PATH"
         eval "$(pyenv init --path)"
+        eval "$(pyenv init -)"
         eval "$(pyenv virtualenv-init -)"
-        pyenv install -s 3.9.0
-        pyenv virtualenv 3.9.0 {{ python_env_name }}
-        pyenv activate {{ python_env_name }}
+        pyenv install -s "{{ python_version }}" 
+        pyenv global "{{ python_version }}"
+        pyenv virtualenv "{{ python_version }}" "{{ python_env_name }}"
+        pyenv activate "{{ python_env_name }}"
         pip install pynvim
         pyenv deactivate
       args:
@@ -74,7 +81,7 @@
     - name: Install LazyGit on Linux
       ansible.builtin.shell: |
         LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": *"v\K[^"]*')
-        curl -Lo lazygit.tar.gz "{{ lazygit_repo }}/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
+        curl -Lo lazygit.tar.gz "{{ lazygit_repo }}/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_{{ ISA }}.tar.gz"
         tar xf lazygit.tar.gz lazygit
         install lazygit -D -t /usr/local/bin/
         rm -rf lazygit lazygit.tar.gz

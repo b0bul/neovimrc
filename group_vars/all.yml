@@ -1,0 +1,5 @@
+---
+isa_conversion_table:
+  aarch64: arm64
+  x86_64: x86_64
+ISA: "{{ isa_conversion_table[ansible_facts.architecture] }}"

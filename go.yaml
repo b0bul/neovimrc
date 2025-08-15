@@ -15,7 +15,11 @@
     - name: Set Go version facts
       set_fact:
         go_version_string: "{{ go_version_response.content.splitlines()[0] }}"
-        go_tarball: "{{ go_version_response.content.splitlines()[0] }}.linux-amd64.tar.gz"
+        go_tarball: "{{ go_version_response.content.splitlines()[0] }}.linux-{{ ISA }}.tar.gz"
+
+    - name: link
+      ansible.builtin.debug:
+        var: go_tarball
 
     - name: Download Go tarball
       ansible.builtin.get_url:

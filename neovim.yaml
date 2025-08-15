@@ -1,7 +1,6 @@
 ---
 - name: Update Ubuntu and install Neovim
   hosts: localhost
-  become: yes
   vars:
     desired_version: v0.11.3
     isa_conversion_table:
@@ -11,7 +10,7 @@
   tasks:
     - name: Print all available facts
       ansible.builtin.debug:
-        var: ISA
+        var: ansible_env 
 
     - name: Check nvim version
       command: nvim -v
@@ -38,12 +37,14 @@
         that:
           - "nvim_version is version('desired_version', '<')"
       when: nvim.failed == false
+      ignore_errors: yes
 
     - name: Update apt cache and upgrade packages
       apt:
         update_cache: yes
         upgrade: dist
         cache_valid_time: 3600
+      become: yes
 
     - name: Install dependencies for Neovim
       apt:
@@ -57,6 +58,7 @@
           - tar
           - npm
         state: present
+      become: yes
 
     - name: Download Neovim latest release
       get_url:
@@ -69,6 +71,7 @@
         path: /opt/nvim
         state: directory
         mode: '0755'
+      become: yes
 
     - name: Create /tmp/nvim-extracted directory
       file:
@@ -93,10 +96,12 @@
       ansible.builtin.file:
         state: absent
         path: /opt/nvim
+      become: yes
 
     - name: Move Neovim files to /opt/nvim
       shell: mv "/tmp/nvim-extracted/nvim-linux-{{ ISA }}/" /opt/nvim/
       when: contents["stdout_lines"] | length > 1 # total: 0 counts as 1
+      become: yes
 
     - name: Ensure Neovim binary is executable
       file:
@@ -113,7 +118,7 @@
     - name: Clone Neovim Kickstart config
       git:
         repo: https://github.com/nvim-lua/kickstart.nvim.git
-        dest: /home/{{ ansible_user }}/.config/nvim
+        dest: "{{ ansible_env.HOME }}/.config/nvim"
         depth: 1
       become: yes 
 

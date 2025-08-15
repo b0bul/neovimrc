@@ -4,14 +4,8 @@ changes across multiple machines and in and out of kickstart. By default `Sync` 
 with empty args.
 
 ```
-sudo apt install ansible -y
-ansible-playbook -c local -i 'localhost,' main.yaml -u $(whoami)
-```
-
-
-```
-NVIM v0.11.2
-KICKSTART e947649
+NVIM v0.11.3
+KICKSTART 3338d39
 ```
 
 Once deployed 
@@ -24,15 +18,14 @@ Once deployed
 
 ### deploy 
 ```bash
-gh repo clone b0bu/neovimrc && cd neovimrc
-./deps.sh
-#initial sync -  move to keymaps after this
+sudo apt install git gh ansible -y
+gh repo clone b0bul/neovimrc && cd neovimrc
+ansible-playbook -c local -i 'localhost,' main.yaml -u $(whoami)
+# initial sync -  move to keymaps after this
 nvim --headless -c "luafile after/plugin/sync.lua" -c "lua Sync({})" -c "qa"
 ```
 ### reqs 
-- set `vim.g.have_nerd_font = true` in kickstart init.lua
 - `'nvim-tree/nvim-web-devicons'` is pre-installed by kickstart
-- uncomment `{ import = 'custom.plugin' },` in `~/.config/nvim/init.lua`
 
 ### installed lsps
 - bash-debug-adapter

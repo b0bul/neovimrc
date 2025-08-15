@@ -136,3 +136,11 @@
         regexp: "^  -- { import = 'custom.plugins' },$"
         line: " { import = 'custom.plugins' },"
 
+    - name: Enable nerd fonts in kickstart
+      lineinfile:
+        dest: "{{ ansible_env.HOME }}/.config/nvim/init.lua"
+        regexp: "^vim.g.have_nerd_font = false$"
+        line: "vim.g.have_nerd_font = true"
+
+
+

@@ -142,5 +142,7 @@
         regexp: "^vim.g.have_nerd_font = false$"
         line: "vim.g.have_nerd_font = true"
 
-
-
+    - name: Sync customizations
+      ansible.builtin.shell: nvim --headless -c "luafile after/plugin/sync.lua" -c "lua Sync({})" -c "qa"
+      tags: ["sync"]
+    

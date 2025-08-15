@@ -7,10 +7,6 @@
     python_env_name: "nvim"
     python_version: "3.9.0"
   tasks:
-    - name: stuff
-      ansible.builtin.debug:
-        var: ISA
-
     - name: Detect operating system
       ansible.builtin.set_fact:
         is_linux: "{{ ansible_system == 'Linux' }}"
@@ -81,17 +77,34 @@
     - name: Install LazyGit on Linux
       ansible.builtin.shell: |
         LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": *"v\K[^"]*')
-        curl -Lo lazygit.tar.gz "{{ lazygit_repo }}/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_{{ ISA }}.tar.gz"
-        tar xf lazygit.tar.gz lazygit
-        install lazygit -D -t /usr/local/bin/
-        rm -rf lazygit lazygit.tar.gz
+        curl -Lo /tmp/lazygit.tar.gz "{{ lazygit_repo }}/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_{{ ISA }}.tar.gz"
+        tar xf /tmp/lazygit.tar.gz -C /usr/local/bin/
+        rm -rf /tmp/lazygit.tar.gz
       when: is_linux
+      become: yes
       args:
         executable: /bin/bash
 
     - name: Add alias for nvim if not present
       ansible.builtin.lineinfile:
-        path: ~/.zshrc
+        path: "{{ item }}" 
         line: "alias vim='nvim'"
         state: present
+      loop:
+        - ~/.zshrc
+        - ~/.bashrc
+
+    - name: Add pyenv to rc
+      ansible.builtin.blockinfile:
+        path: "{{ item }}" 
+        block: |
+          export PATH="$HOME/.pyenv/bin:$PATH"
+          eval "$(pyenv init --path)"
+          eval "$(pyenv init -)"
+          eval "$(pyenv virtualenv-init -)"
+        state: present
+      loop:
+        - ~/.zshrc
+        - ~/.bashrc
+
 

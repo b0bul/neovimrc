@@ -1,0 +1,80 @@
+- name: Setup development environment
+  hosts: localhost
+  become: no
+  vars:
+    lazygit_repo: "https://github.com/jesseduffield/lazygit"
+    font_package: "font-fira-code-nerd-font"
+    python_env_name: "nvim"
+  tasks:
+    - name: Detect operating system
+      ansible.builtin.set_fact:
+        is_linux: "{{ ansible_system == 'Linux' }}"
+        is_macos: "{{ ansible_system == 'Darwin' }}"
+
+    - name: Install packages on Linux
+      ansible.builtin.apt:
+        name:
+          - npm
+          - xclip
+          - lua5.3
+          - fd-find
+        update_cache: yes
+      when: is_linux
+      become: yes
+
+    - name: Install packages on macOS
+      ansible.builtin.homebrew:
+        name:
+          - lazygit
+          - fd
+          - npm
+      when: is_macos
+
+    - name: Install font on macOS
+      ansible.builtin.homebrew_cask:
+        name: "{{ font_package }}"
+      when: is_macos
+
+    - name: Remove previous version
+      ansible.builtin.file:
+        name: "{{ ansible_env.HOME }}/.pyenv"
+        state: absent
+
+    - name: Ensure pyenv and virtualenv are installed
+      ansible.builtin.shell: |
+        if ! command -v pyenv &> /dev/null; then
+          curl https://pyenv.run | bash
+        fi
+      args:
+        executable: /bin/bash
+
+    - name: Create and activate Python virtualenv for Vimspector
+      ansible.builtin.shell: |
+        export PATH="$HOME/.pyenv/bin:$PATH"
+        eval "$(pyenv init --path)"
+        eval "$(pyenv virtualenv-init -)"
+        pyenv install -s 3.9.0
+        pyenv virtualenv 3.9.0 {{ python_env_name }}
+        pyenv activate {{ python_env_name }}
+        pip install pynvim
+        pyenv deactivate
+      args:
+        executable: /bin/bash
+
+    - name: Install LazyGit on Linux
+      ansible.builtin.shell: |
+        LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": *"v\K[^"]*')
+        curl -Lo lazygit.tar.gz "{{ lazygit_repo }}/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
+        tar xf lazygit.tar.gz lazygit
+        install lazygit -D -t /usr/local/bin/
+        rm -rf lazygit lazygit.tar.gz
+      when: is_linux
+      args:
+        executable: /bin/bash
+
+    - name: Add alias for nvim if not present
+      ansible.builtin.lineinfile:
+        path: ~/.zshrc
+        line: "alias vim='nvim'"
+        state: present
+

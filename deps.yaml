@@ -19,8 +19,7 @@
     - name: Install packages on Linux
       ansible.builtin.package:
         name: "{{ debian_packages if is_ubuntu else rhel_packages if is_rhel }}"
-        update_cache: yes
-      when: is_ubuntu
+        state: present
       become: yes
 
     - name: Install packages on macOS

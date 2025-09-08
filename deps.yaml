@@ -9,29 +9,18 @@
   tasks:
     - name: Detect operating system
       ansible.builtin.set_fact:
-        is_linux: "{{ ansible_system == 'Linux' }}"
-        is_macos: "{{ ansible_system == 'Darwin' }}"
+        is_rhel:  "{{ ansible_system == 'Linux' and ansible_facts['os_family'] == 'RedHat' }}"
+        is_ubuntu: "{{ ansible_system == 'Linux' and ansible_facts['os_family'] == 'Debian' }}"
+        is_macos:  "{{ ansible_system == 'Darwin'}}"
+
+    - debug: 
+        var: is_ubuntu
 
     - name: Install packages on Linux
-      ansible.builtin.apt:
-        name:
-          - fontconfig
-          - npm
-          - xclip
-          - lua5.3
-          - fd-find
-          - build-essential
-          - zlib1g-dev
-          - libffi-dev
-          - libssl-dev
-          - libbz2-dev
-          - libreadline-dev
-          - libsqlite3-dev
-          - liblzma-dev
-          - libncurses-dev
-          - tk-dev
+      ansible.builtin.package:
+        name: "{{ debian_packages if is_ubuntu else rhel_packages if is_rhel }}"
         update_cache: yes
-      when: is_linux
+      when: is_ubuntu
       become: yes
 
     - name: Install packages on macOS
@@ -85,7 +74,7 @@
           tar xf /tmp/lazygit.tar.gz -C /usr/local/bin/
           rm -rf /tmp/lazygit.tar.gz
         fi
-      when: is_linux
+      when: is_ubuntu or is_rhel
       become: yes
       args:
         executable: /bin/bash
@@ -125,8 +114,7 @@
         curl -Lo /tmp/firacode.zip "https://github.com/ryanoasis/nerd-fonts/releases/download/v3.4.0/FiraCode.zip"
         unzip /tmp/firacode.zip -d ~/.fonts/
         fc-cache -fv
-      when: is_linux
+      when: is_ubuntu or is_rhel
       args:
         executable: /bin/bash
       tags: ["font"]
-

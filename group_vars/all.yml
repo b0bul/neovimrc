@@ -6,19 +6,17 @@ ISA: "{{ isa_conversion_table[ansible_facts.architecture] }}"
 rhel_packages:
     - fontconfig
     - npm
-    - xclip
-    - lua5.3
+    - lua
     - fd-find
-    - build-essential
-    - zlib1g-dev
-    - libffi-dev
-    - libssl-dev
-    - libbz2-dev
-    - libreadline-dev
-    - libsqlite3-dev
-    - liblzma-dev
-    - libncurses-dev
-    - tk-dev
+    - zlib-devel
+    - libffi-devel
+    - openssl-devel
+    - bzip2-devel
+    - readline-devel
+    - sqlite-devel
+    - xz-devel
+    - ncurses-devel
+    - tk-devel
 debian_packages:
     - fontconfig
     - npm

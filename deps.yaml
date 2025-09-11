@@ -13,14 +13,32 @@
         is_ubuntu: "{{ ansible_system == 'Linux' and ansible_facts['os_family'] == 'Debian' }}"
         is_macos:  "{{ ansible_system == 'Darwin'}}"
 
-    - debug: 
-        var: is_ubuntu
-
     - name: Install packages on Linux
       ansible.builtin.package:
         name: "{{ debian_packages if is_ubuntu else rhel_packages if is_rhel }}"
         state: present
       become: yes
+
+    - name: install fd
+      block:
+        - when: is_rhel
+          name: Download fd archive
+          get_url:
+            url: "{{ fd_url | regex_replace('arm64', 'aarch64') }}"
+            dest: "/tmp/{{ fd_archive | regex_replace('arm64', 'aarch64') }}"
+            mode: '0644'
+
+        - name: Extract fd archive
+          unarchive:
+            src: "/tmp/{{ fd_archive | regex_replace('arm64', 'aarch64') }}"
+            dest: "/tmp"
+
+        - name: Install fd binary
+          copy:
+            src: "/tmp/{{ fd_extract_dir | regex_replace('arm64', 'aarch64') }}/fd"
+            dest: "/usr/local/bin/fd"
+            mode: '0755'
+          become: true
 
     - name: Install packages on macOS
       ansible.builtin.homebrew:

@@ -32,7 +32,7 @@
       - clang
       - llvm
       - libbpf
-      - libbpf-devel
+        #- libbpf-devel
       - bpftool
 
   tasks:

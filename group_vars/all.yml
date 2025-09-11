@@ -3,11 +3,14 @@ isa_conversion_table:
   aarch64: arm64
   x86_64: x86_64
 ISA: "{{ isa_conversion_table[ansible_facts.architecture] }}"
+fd_version: "10.3.0"
+fd_archive: "fd-v{{ fd_version }}-{{ ISA }}-unknown-linux-gnu.tar.gz"
+fd_url: "https://github.com/sharkdp/fd/releases/download/v{{ fd_version }}/{{ fd_archive }}"
+fd_extract_dir: "fd-v{{ fd_version }}-{{ ISA }}-unknown-linux-gnu"
 rhel_packages:
     - fontconfig
     - npm
     - lua
-    - fd-find
     - zlib-devel
     - libffi-devel
     - openssl-devel

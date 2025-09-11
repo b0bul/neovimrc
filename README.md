@@ -21,8 +21,7 @@ Once deployed
 sudo apt install git gh ansible -y
 gh repo clone b0bul/neovimrc && cd neovimrc
 ansible-playbook -c local -i 'localhost,' main.yaml -u $(whoami)
-# initial sync -  move to keymaps after this
-nvim --headless -c "luafile after/plugin/sync.lua" -c "lua Sync({})" -c "qa"
+# keyboard maps <Leader>cfg <Leader>ctg to sync 
 ```
 ### reqs 
 - `'nvim-tree/nvim-web-devicons'` is pre-installed by kickstart

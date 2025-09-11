@@ -31,19 +31,10 @@
       when: nvim.failed == false
       ignore_errors: yes
 
-    - name: Update apt cache and upgrade packages
-      apt:
-        update_cache: yes
-        upgrade: dist
-        cache_valid_time: 3600
-      become: yes
-
     - name: Install dependencies for Neovim
-      apt:
+      package:
         name:
           - git
-          - build-essential
-          - ninja-build
           - gettext
           - unzip
           - curl
@@ -108,6 +99,7 @@
         line: 'export PATH=$PATH:/opt/nvim/bin'
         create: yes
         mode: '0644'
+      become: yes
 
     - name: Clone Neovim Kickstart config
       git:

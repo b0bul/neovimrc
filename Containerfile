@@ -51,7 +51,7 @@ RUN curl https://pyenv.run | bash \
     && pyenv deactivate
 
 # Install LazyGit
-RUN LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": *"v\K[^"]*') \
+RUN LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": *"v\K[^"]*' || echo "0.55.1") \
     && echo "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_linux_${ARCH_f1}.tar.gz" \
     && curl -Lo /tmp/lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_linux_${ARCH_f1}.tar.gz" \
     && tar xf /tmp/lazygit.tar.gz -C /usr/local/bin/ \
@@ -85,15 +85,14 @@ RUN apt-get update && apt-get install -y \
 # Copy Neovim binary from builder stage to run configuration commands
 COPY --from=builder /opt/nvim /opt/nvim
 
-# Clone b0bul/neovimrc to /root/.config/nvim for Neovim configuration
 RUN git clone --depth 1 https://github.com/b0bul/neovimrc.git /root/dev/neovimrc
+
+RUN git clone https://github.com/b0bul/kickstart.nvim.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim
 
 # Enable custom plugins and Nerd Fonts in configuration (if not already enabled)
 RUN sed -i "s/-- { import = 'custom.plugins' },/{ import = 'custom.plugins' },/" /root/.config/nvim/init.lua \
     && sed -i "s/vim.g.have_nerd_font = false/vim.g.have_nerd_font = true/" /root/.config/nvim/init.lua || true
 
-# Clone b0bul/neovimrc to /root/dev/neovimrc for development/syncing
-RUN git clone --depth 1 https://github.com/b0bul/neovimrc.git /root/dev/neovimrc
 
 # Sync Neovim customizations from /root/dev/neovimrc
 WORKDIR /root/dev/neovimrc

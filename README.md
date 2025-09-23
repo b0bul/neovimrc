@@ -4,13 +4,25 @@ changes across multiple machines and in and out of kickstart. By default `Sync` 
 with empty args.
 
 ```
-podman login docker.io
-```
-
-```
-NVIM v0.11.3
+NVIM v0.11.4
 KICKSTART 3338d39
 ```
+to run as container
+```
+nnn() { podman run -it --rm -v $PWD/$1:/tmp/$1 maclighiche/dev-arm64:latest /bin/bash -c "nvim /tmp/$1"; }
+```
+usage
+```
+# current directly
+nnn .
+# file
+nnn main.c
+
+to push container environments
+```
+podman login docker.io
+```
+### everything else
 
 Once deployed 
 `<leader>cfg` syncs any new config from git, `<leader>ctg` syncs new edits into git

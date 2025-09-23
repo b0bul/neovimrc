@@ -124,6 +124,10 @@ RUN apt-get update && apt-get install -y \
     fonts-firacode \
     fontconfig \
     python3 \
+    curl \
+    unzip \
+    wget \
+    tar \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy artifacts from builder stage

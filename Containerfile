@@ -1,6 +1,7 @@
 # Stage 1: Builder stage for downloading and extracting artifacts
 FROM ubuntu:latest AS builder
-
+ARG ARCH_f1
+ARG ARCH_f2
 # Set environment variables for non-interactive installations
 ENV DEBIAN_FRONTEND=noninteractive \
     PYENV_ROOT="/root/.pyenv" \
@@ -34,6 +35,9 @@ RUN mkdir -p /root/.fonts \
     && fc-cache -fv \
     && rm /tmp/firacode.zip
 
+COPY ./zscaler.crt /usr/local/share/ca-certificates/zscaler.crt
+RUN update-ca-certificates 
+
 # Install pyenv and set up Python virtualenv
 RUN curl https://pyenv.run | bash \
     && eval "$(pyenv init --path)" \
@@ -48,24 +52,25 @@ RUN curl https://pyenv.run | bash \
 
 # Install LazyGit
 RUN LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": *"v\K[^"]*') \
-    && curl -Lo /tmp/lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz" \
+    && echo "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_linux_${ARCH_f1}.tar.gz" \
+    && curl -Lo /tmp/lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/download/v${LAZYGIT_VERSION}/lazygit_${LAZYGIT_VERSION}_linux_${ARCH_f1}.tar.gz" \
     && tar xf /tmp/lazygit.tar.gz -C /usr/local/bin/ \
     && rm /tmp/lazygit.tar.gz
 
 # Install Neovim
-RUN curl -Lo /tmp/nvim-linux-x86_64.tar.gz "https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz" \
+RUN curl -Lo /tmp/nvim-linux-${ARCH_f1}.tar.gz "https://github.com/neovim/neovim/releases/latest/download/nvim-linux-${ARCH_f1}.tar.gz" \
     && mkdir -p /tmp/nvim-extracted \
-    && tar xzf /tmp/nvim-linux-x86_64.tar.gz -C /tmp/nvim-extracted \
-    && mv /tmp/nvim-extracted/nvim-linux-x86_64 /opt/nvim \
-    && rm -rf /tmp/nvim-linux-x86_64.tar.gz /tmp/nvim-extracted
+    && tar xzf /tmp/nvim-linux-${ARCH_f1}.tar.gz -C /tmp/nvim-extracted \
+    && mv /tmp/nvim-extracted/nvim-linux-${ARCH_f1} /opt/nvim \
+    && rm -rf /tmp/nvim-linux-${ARCH_f1}.tar.gz /tmp/nvim-extracted
 
 # Install Go with version validation
 RUN GO_VERSION_RAW=$(curl -s --retry 3 --connect-timeout 10 --fail https://go.dev/VERSION?m=text|head -1|| echo "go1.23.1") \
     && echo "Raw Go version output: $GO_VERSION_RAW" \
     && GO_VERSION=$GO_VERSION_RAW \
     && echo "Using Go version: $GO_VERSION" \
-    && echo "Getting: https://go.dev/dl/${GO_VERSION}.linux-amd64.tar.gz" \
-    && curl -Lo /tmp/go.tar.gz --retry 3 --connect-timeout 10 --fail "https://go.dev/dl/${GO_VERSION}.linux-amd64.tar.gz" \
+    && echo "Getting: https://go.dev/dl/${GO_VERSION}.linux-${ARCH_f2}.tar.gz" \
+    && curl -Lo /tmp/go.tar.gz --retry 3 --connect-timeout 10 --fail "https://go.dev/dl/${GO_VERSION}.linux-${ARCH_f2}.tar.gz" \
     && tar -C /usr/local -xzf /tmp/go.tar.gz \
     && rm /tmp/go.tar.gz
 
@@ -81,7 +86,7 @@ RUN apt-get update && apt-get install -y \
 COPY --from=builder /opt/nvim /opt/nvim
 
 # Clone b0bul/neovimrc to /root/.config/nvim for Neovim configuration
-RUN git clone --depth 1 https://github.com/b0bul/neovimrc.git /root/.config/nvim
+RUN git clone --depth 1 https://github.com/b0bul/neovimrc.git /root/dev/neovimrc
 
 # Enable custom plugins and Nerd Fonts in configuration (if not already enabled)
 RUN sed -i "s/-- { import = 'custom.plugins' },/{ import = 'custom.plugins' },/" /root/.config/nvim/init.lua \

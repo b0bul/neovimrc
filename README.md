@@ -4,6 +4,10 @@ changes across multiple machines and in and out of kickstart. By default `Sync` 
 with empty args.
 
 ```
+podman login docker.io
+```
+
+```
 NVIM v0.11.3
 KICKSTART 3338d39
 ```

@@ -24,8 +24,8 @@ to push container environments
 ```
 podman login docker.io
 ```
-```
 ### everything else
+```
 
 Once deployed 
 `<leader>cfg` syncs any new config from git, `<leader>ctg` syncs new edits into git

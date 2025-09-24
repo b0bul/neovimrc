@@ -38,9 +38,12 @@ nnn .
 # file
 nnn main.c
 ```
-to push container environments
-```
+to push container environments with qemu based lima, `qemu-user-static` package required for multi-target compilation
+```console
 podman login docker.io
+# builds for amd64 and arm64
+make all VERSION=vx.y.z
+make push VERSION=vx.y.z
 ```
 ### everything else
 ```

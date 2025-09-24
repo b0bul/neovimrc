@@ -1,7 +1,6 @@
 ## portable dev environment
 This is written for me, it's my portable dev environment, so not expecting reuse. This is a mechanism I use to sync
 changes across multiple machines and in and out my neovim config. The `Sync` module will be moved out of this into it's own lua plugin soon.
-with empty args.
 
 ```
 NVIM v0.11.4

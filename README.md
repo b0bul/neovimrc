@@ -8,10 +8,25 @@ NVIM v0.11.4
 KICKSTART 3338d39
 ```
 to run as container either arm64 or amd64
-```
+bash```
 nnn() { podman run -it --rm -v $PWD/$1:/tmp/$1 docker.io/maclighiche/dev-arm64:latest /bin/bash -c "nvim /tmp/$1"; }
 # mount certificates if required
-nnn() { podman run -it --rm -v $PWD/certs:/usr/local/share/ca-certificates:Z docker.io/maclighiche/dev-amd64:latest /bin/bash -c "update-ca-certificates && nvim /tmp/$1"; }
+function nnn()
+{
+  lcerts=$HOME/.certs
+  rcerts=/usr/local/share/ca-certificates
+  image=docker.io/maclighiche/dev-amd64:latest
+  cwd=$PWD/$1
+  if [ "$1" = "update" ]; then
+    podman pull ${image}
+    ext=$?
+    return $ext
+  fi
+  echo mounting $cwd to /tmp/dev
+  podman run -it --rm -v $cwd:/tmp/dev:Z \
+          -v $lcerts:$rcerts:Z \
+          $image /bin/bash -c "update-ca-certificates && nvim /tmp/$1";
+}
 ```
 usage
 ```

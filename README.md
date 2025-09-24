@@ -9,7 +9,7 @@ KICKSTART 3338d39
 ```
 to run as container either arm64 or amd64
 
-bash```
+```bash
 # mount tmp 
 nnn() { podman run -it --rm -v $PWD/$1:/tmp/$1 docker.io/maclighiche/dev-arm64:latest /bin/bash -c "nvim /tmp/$1"; }
 # mount certificates if required
@@ -32,7 +32,7 @@ function nnn()
 ```
 
 usage
-```
+```console
 # current directly
 nnn .
 # file

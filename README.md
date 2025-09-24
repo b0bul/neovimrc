@@ -1,6 +1,6 @@
-## neovim kickstart customization
-This is written for me, so not expecting reuse. This is a mechanism I use to sync
-changes across multiple machines and in and out of kickstart. By default `Sync` tries from cwd and can be called
+## portable dev environment
+This is written for me, it's my portable dev environment, so not expecting reuse. This is a mechanism I use to sync
+changes across multiple machines and in and out my neovim config. The `Sync` module will be moved out of this into it's own lua plugin soon.
 with empty args.
 
 ```

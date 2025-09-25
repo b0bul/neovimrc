@@ -17,25 +17,49 @@ function nnn()
   lcerts=$HOME/.certs
   rcerts=/usr/local/share/ca-certificates
   image=docker.io/maclighiche/dev-amd64:latest
-  cwd=$PWD/$1
-  if [ "$1" = "update" ]; then
+  ssh=$HOME/.ssh
+  cmd=/tmp/$1
+  path=$1
+
+  cwd=$PWD/$path
+  
+  if [ "$path" = "update" ]; then
     podman pull ${image}
-    ext=$?
+    ext=$? 
     return $ext
   fi
-  echo mounting $cwd to /tmp/dev
-  podman run -it --rm -v $cwd:/tmp/dev:Z \
+  
+  if [[ "$path" =~ ^"r:" ]]; then
+    path=$(echo $path | tr -d 'r:')
+    # no need to pass leading /
+    cmd="oil-ssh://<hostname>@<ip>/<somepathisrequired>/$path"
+    podman run -it --rm \
           -v $lcerts:$rcerts:Z \
-          $image /bin/bash -c "update-ca-certificates && nvim /tmp/$1";
+          -v $ssh:/root/.ssh:Z \
+          $image /bin/bash -c "update-ca-certificates && nvim $cmd";
+    ext=$? 
+    return $ext
+  fi
+  
+  echo mounting $cwd to /tmp/dev
+  podman run -it --rm \
+          -v $cwd:/tmp/dev:Z \ 
+          -v $lcerts:$rcerts:Z \
+          -v $ssh:/root/.ssh:Z \
+          $image /bin/bash -c "update-ca-certificates && nvim $cmd";
+  ext=$? 
+  return $ext
 }
 ```
 
 usage
 ```console
-# current directly
+# current dir local files
 nnn .
 # file
 nnn main.c
+# remote directory "dir" (oil-ssh inside if needed)
+nnn r:dev
 ```
 to push container environments with qemu based lima, `qemu-user-static` package required for multi-target compilation
 ```console

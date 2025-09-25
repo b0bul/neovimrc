@@ -39,6 +39,7 @@ nnn main.c
 ```
 to push container environments with qemu based lima, `qemu-user-static` package required for multi-target compilation
 ```console
+sudo apt install podman buildah qemu-user-static
 podman login docker.io
 # builds for amd64 and arm64
 make all VERSION=vx.y.z

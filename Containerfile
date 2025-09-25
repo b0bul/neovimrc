@@ -154,6 +154,8 @@ RUN echo 'export PYENV_ROOT="$HOME/.pyenv"' >> /root/.bashrc \
     && echo 'export PATH=$PATH:/usr/local/go/bin:/opt/nvim/bin' > /etc/profile.d/env.sh \
     && chmod 644 /etc/profile.d/env.sh
 
+RUN npm install -g tree-sitter-cli
+
 # Set working directory
 WORKDIR /root
 

@@ -128,6 +128,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     wget \
     tar \
+    binutils \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy artifacts from builder stage

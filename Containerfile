@@ -129,6 +129,7 @@ RUN apt-get update && apt-get install -y \
     wget \
     tar \
     binutils \
+    python3.12-venv \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy artifacts from builder stage

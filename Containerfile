@@ -130,6 +130,7 @@ RUN apt-get update && apt-get install -y \
     tar \
     binutils \
     python3.12-venv \
+    ripgrep \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy artifacts from builder stage

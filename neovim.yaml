@@ -27,7 +27,7 @@
     - name: Continue?
       assert:
         that:
-          - "installed_version is version(desired_version, '<')"
+          - "installed_version is version(desired_version, '<=')"
         fail_msg: "Neovim is already up-to-date ({{ installed_version }} >= {{ desired_version }}). Skipping upgrade."
         success_msg: "Neovim needs upgrade ({{ installed_version }} < {{ desired_version }}). Continuing."
       when: nvim.failed == false

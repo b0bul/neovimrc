@@ -113,6 +113,19 @@
         state: present
       loop: "{{ [ '~/.bashrc' ] if current_shell == 'bash' else [ '~/.zshrc' ] if current_shell == 'zsh' else [] }}"
 
+    - name: Enable profile.d 
+      ansible.builtin.blockinfile:
+        path: "{{ item }}" 
+        block: |
+          if [ -d /etc/profile.d ]; then
+            for i in /etc/profile.d/*.sh; do
+              [ -r "$i" ] && . "$i"
+            done
+            unset i
+          fi
+        state: present
+      loop: "{{ [ '~/.bashrc' ] if current_shell == 'bash' else [ '~/.zshrc' ] if current_shell == 'zsh' else [] }}"
+
     - name: create font cache
       ansible.builtin.file:
         path: "{{ ansible_env.HOME }}/.fonts"

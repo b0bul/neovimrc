@@ -2,7 +2,7 @@
 - name: Update Ubuntu and install Neovim
   hosts: localhost
   vars:
-    desired_version: v0.11.3
+    desired_version: v0.11.4
   tasks:
     - name: Check nvim version
       command: nvim -v
@@ -28,8 +28,9 @@
       assert:
         that:
           - "nvim_version is version('desired_version', '<')"
+        fail_msg: "Neovim is already up-to-date ({{ nvim_version }} >= {{ desired_version }}). Skipping upgrade."
+        success_msg: "Neovim needs upgrade ({{ nvim_version }} < {{ desired_version }}). Continuing."
       when: nvim.failed == false
-      ignore_errors: yes
 
     - name: Install dependencies for Neovim
       package:

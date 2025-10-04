@@ -111,6 +111,8 @@
           eval "$(pyenv init -)"
           eval "$(pyenv virtualenv-init -)"
         state: present
+        marker: "# {mark} ANSIBLE PYENV BLOCK"
+        backup: yes
       loop: "{{ [ '~/.bashrc' ] if current_shell == 'bash' else [ '~/.zshrc' ] if current_shell == 'zsh' else [] }}"
 
     - name: Enable profile.d 
@@ -124,6 +126,8 @@
             unset i
           fi
         state: present
+        marker: "# {mark} ANSIBLE PROFILE BLOCK"
+        backup: yes
       loop: "{{ [ '~/.bashrc' ] if current_shell == 'bash' else [ '~/.zshrc' ] if current_shell == 'zsh' else [] }}"
 
     - name: create font cache

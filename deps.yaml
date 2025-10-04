@@ -2,6 +2,7 @@
   hosts: localhost
   become: no
   vars:
+    current_shell: "{{ ansible_user_shell | basename }}"
     lazygit_repo: "https://github.com/jesseduffield/lazygit"
     font_package: "font-fira-code-nerd-font"
     python_env_name: "nvim"
@@ -21,24 +22,22 @@
 
     - name: install fd
       block:
-        - when: is_rhel
-          name: Download fd archive
+        - name: Download fd archive
           get_url:
             url: "{{ fd_url | regex_replace('arm64', 'aarch64') }}"
             dest: "/tmp/{{ fd_archive | regex_replace('arm64', 'aarch64') }}"
             mode: '0644'
-
         - name: Extract fd archive
           unarchive:
             src: "/tmp/{{ fd_archive | regex_replace('arm64', 'aarch64') }}"
             dest: "/tmp"
-
         - name: Install fd binary
           copy:
             src: "/tmp/{{ fd_extract_dir | regex_replace('arm64', 'aarch64') }}/fd"
             dest: "/usr/local/bin/fd"
             mode: '0755'
           become: true
+      when: is_rhel
 
     - name: Install packages on macOS
       ansible.builtin.homebrew:
@@ -101,9 +100,7 @@
         path: "{{ item }}" 
         line: "alias vim='nvim'"
         state: present
-      loop:
-        - ~/.zshrc
-        - ~/.bashrc
+      loop: "{{ [ '~/.bashrc' ] if current_shell == 'bash' else [ '~/.zshrc' ] if current_shell == 'zsh' else [] }}"
 
     - name: Add pyenv to rc
       ansible.builtin.blockinfile:
@@ -114,9 +111,7 @@
           eval "$(pyenv init -)"
           eval "$(pyenv virtualenv-init -)"
         state: present
-      loop:
-        - ~/.zshrc
-        - ~/.bashrc
+      loop: "{{ [ '~/.bashrc' ] if current_shell == 'bash' else [ '~/.zshrc' ] if current_shell == 'zsh' else [] }}"
 
     - name: create font cache
       ansible.builtin.file:

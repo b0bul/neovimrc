@@ -3,9 +3,11 @@
   hosts: all
   become: yes
   vars:
+    ISA: amd64 
     go_download_base: "https://go.dev/dl/"
     go_install_dir: "/usr/local"
   tasks:
+
     - name: Get latest Go version
       ansible.builtin.uri:
         url: "https://go.dev/VERSION?m=text"
